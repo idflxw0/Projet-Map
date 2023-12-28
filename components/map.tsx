@@ -23,9 +23,9 @@ export default function Map() {
   );
   const options = useMemo<MapOptions>(
     () => ({
-      mapId: "b181cac70f27f5e6",
+      mapId: "9dd822bc7a3962da",
       disableDefaultUI: true,
-      clickableIcons: false,
+      clickableIcons: true,
     }),
     []
   );
