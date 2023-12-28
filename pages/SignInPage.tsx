@@ -2,7 +2,7 @@ import React from 'react';
 import Enregistrement from '../components/Sign_in';
 import Head from "next/head"; // Adjust the path as necessary
 
-const EnregistrementPage = () => {
+const SignInPage = () => {
   return (
     <>
       <Head>
@@ -12,4 +12,4 @@ const EnregistrementPage = () => {
     </>
   );
 }
-export default EnregistrementPage;
+export default SignInPage;
