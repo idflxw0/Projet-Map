@@ -12,5 +12,4 @@ const EnregistrementPage = () => {
     </>
   );
 }
-
 export default EnregistrementPage;

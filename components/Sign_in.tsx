@@ -1,5 +1,8 @@
 import React, {useState} from 'react';
 import { useRouter } from 'next/router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebookF, faGoogle, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
+import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 const Enregistrement = () => {
   // State to track if the container is in sign-up mode
   const [isSignUpMode, setIsSignUpMode] = useState(false);
@@ -28,52 +31,57 @@ const Enregistrement = () => {
             <form action="#" className="sign-in-form">
               <h2 className="title">Connexion</h2>
               <div className="input-field">
-                <i className="fas fa-envelope"></i>
+                {/*<i className="fas fa-envelope"></i>*/}
+                <FontAwesomeIcon className={"fontAwesomeIcon"} icon={faEnvelope} />
                 <input type="text" placeholder="Email" />
               </div>
               <div className="input-field">
-                <i className="fas fa-lock"></i>
+                <FontAwesomeIcon className={"fontAwesomeIcon"} icon={faLock} />
                 <input type="password" placeholder="Mot de passe" />
               </div>
               <input type="submit" value="Connexion" className="btn solid" />
               <p className="social-text">Connectez-vous avez vos réseaux</p>
               <div className="social-media">
+
                 <a href="#" className="social-icon">
-                  <i className="fab fa-facebook-f"></i>
+                  <FontAwesomeIcon icon={faFacebookF}/>
                 </a>
                 <a href="#" className="social-icon">
-                  <i className="fab fa-linkedin-in"></i>
+                  <FontAwesomeIcon icon={faLinkedinIn} />
                 </a>
                 <a href="#" className="social-icon">
-                  <i className="fab fa-google"></i>
+                  <FontAwesomeIcon icon={faGoogle} />
                 </a>
               </div>
             </form>
             <form action="#" className="sign-up-form">
               <h2 className="title">Inscription</h2>
               <div className="input-field">
-                <i className="fas fa-user"></i>
+                <FontAwesomeIcon className={"fontAwesomeIcon"} icon={faUser} />
                 <input type="text" placeholder="Nom" />
               </div>
               <div className="input-field">
-                <i className="fas fa-envelope"></i>
+                <FontAwesomeIcon className={"fontAwesomeIcon"} icon={faEnvelope} />
                 <input type="email" placeholder="Email" />
               </div>
+
               <div className="input-field">
-                <i className="fas fa-lock"></i>
+                <FontAwesomeIcon className={"fontAwesomeIcon"} icon={faLock} />
                 <input type="password" placeholder="Mot de passe" />
               </div>
               <input type="submit" className="btn" value="Valider" />
               <p className="social-text">Inscrivez-vous avec vos réseaux</p>
               <div className="social-media">
                 <a href="#" className="social-icon">
-                  <i className="fab fa-facebook-f"></i>
+                  <FontAwesomeIcon icon={faFacebookF} />
+
                 </a>
                 <a href="#" className="social-icon">
-                  <i className="fab fa-linkedin-in"></i>
+                  <FontAwesomeIcon icon={faLinkedinIn} />
+
                 </a>
                 <a href="#" className="social-icon">
-                  <i className="fab fa-google"></i>
+                  <FontAwesomeIcon icon={faGoogle} />
                 </a>
               </div>
             </form>
