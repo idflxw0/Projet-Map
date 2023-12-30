@@ -6,7 +6,6 @@ export default function Home() {
     googleMapsApiKey: "AIzaSyBWre3X8G7M4O62TSKt2dOC2-1ggLb7pP0",
     libraries: ["places"],
   });
-
   if (!isLoaded) return <div>Loading...</div>;
   return <Map />;
 }
