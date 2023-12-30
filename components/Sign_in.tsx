@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookF, faGoogle, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
@@ -13,6 +13,23 @@ const Enregistrement = () => {
   const [signUpPassword, setSignUpPassword] = useState('');
   const routers = useRouter();
 
+  const isUserLoggedIn = () => {
+    const user = localStorage.getItem('user');
+    console.log(user);
+    return user !== null;
+  };
+
+  // Call this function when your app/component loads
+  useEffect(() => {
+    if (isUserLoggedIn()){
+      console.log('User is already logged in.');
+      // localStorage.clear();
+    }
+    else {
+      console.log('User is not logged in.');
+    }
+  }, []);
+
   // Event handlers for the sign-up and sign-in forms
   const handleSignInSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -21,35 +38,70 @@ const Enregistrement = () => {
       console.log('Email and password are required.');
       return;
     }
-
     try {
       const response = await fetch('http://localhost/backend/login.php', {
         method: 'POST',
         headers: {
+          'Accept':       'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: signInEmail, password: signInPassword }),
+        body: JSON.stringify({
+          email: signInEmail,
+          password: signInPassword
+          }),
       });
 
       const result = await response.json();
 
       if (result.error) {
         console.error('Login failed:', result.error);
-      } else {
-        console.log('Login successful:', result);
-        alert('Login successful!'); // Or any other logic for successful login
+      }
+      else if (result && result.success) {
+        localStorage.setItem('user', JSON.stringify(result.user));
+        console.log(localStorage.getItem('user'));
+        alert('Login successful!');
+        goMain();
       }
     } catch (error) {
       console.error('An error occurred while logging in.', error);
     }
   };
 
-
   const handleSignUpSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Implement your sign-up logic here
-    console.log("Signing up with", signUpName, signUpEmail, signUpPassword);
+    if (!signUpName ||!signUpEmail || !signUpPassword) {
+      console.log('Username,Email and password are required.');
+      return;
+    }
+    try {
+      const response = await fetch('http://localhost/backend/createUser.php', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: signUpName,
+          email: signUpEmail,
+          password: signUpPassword
+        }),
+      });
+      let result = await response.json();
+      console.log(result);
+      if (result.error) {
+        console.error('Sign up failed:', result.error);
+      }
+      else if(result && result.success) {
+        localStorage.setItem('user', JSON.stringify(result.user));
+        console.log(localStorage.getItem('user'));
+        alert('Sign up successful!');
+        goMain();
+      }
+    } catch (error) {
+      console.error('An error occurred during sign up.', error);
+    }
   };
+
   const resetForm = () => {
     setSignInEmail('');
     setSignInPassword('');
@@ -64,7 +116,7 @@ const Enregistrement = () => {
   const handleSignInClick = () => {
     setIsSignUpMode(false);
   };
-  const goBack = () => {
+  const goMain = () => {
     routers.push('/');
   };
 
@@ -72,9 +124,7 @@ const Enregistrement = () => {
   return (
     <div>
 
-      <button id="return-button" className="btn transparent" onClick={goBack}>Retour</button>
-
-
+      <button id="return-button" className="btn transparent" onClick={goMain}>Retour</button>
       <div className={`container_sign_in ${isSignUpMode ? 'sign-up-mode' : ''}`}>
         <div className="forms-container">
           <div className="signin-signup">
