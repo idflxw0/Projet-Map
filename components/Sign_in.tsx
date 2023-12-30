@@ -3,22 +3,72 @@ import { useRouter } from 'next/router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookF, faGoogle, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
+import { Router } from "../Backend/Router";
 const Enregistrement = () => {
-  // State to track if the container is in sign-up mode
   const [isSignUpMode, setIsSignUpMode] = useState(false);
+  const [signInEmail, setSignInEmail] = useState('');
+  const [signInPassword, setSignInPassword] = useState('');
+  const [signUpName, setSignUpName] = useState('');
+  const [signUpEmail, setSignUpEmail] = useState('');
+  const [signUpPassword, setSignUpPassword] = useState('');
+  const routers = useRouter();
 
-  // Event handlers
+  // Event handlers for the sign-up and sign-in forms
+  const handleSignInSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!signInEmail || !signInPassword) {
+      console.log('Email and password are required.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost/backend/login.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: signInEmail, password: signInPassword }),
+      });
+
+      const result = await response.json();
+
+      if (result.error) {
+        console.error('Login failed:', result.error);
+      } else {
+        console.log('Login successful:', result);
+        alert('Login successful!'); // Or any other logic for successful login
+      }
+    } catch (error) {
+      console.error('An error occurred while logging in.', error);
+    }
+  };
+
+
+  const handleSignUpSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    // Implement your sign-up logic here
+    console.log("Signing up with", signUpName, signUpEmail, signUpPassword);
+  };
+  const resetForm = () => {
+    setSignInEmail('');
+    setSignInPassword('');
+    setSignUpName('');
+    setSignUpEmail('');
+    setSignUpPassword('');
+  }
+
   const handleSignUpClick = () => {
     setIsSignUpMode(true);
   };
   const handleSignInClick = () => {
     setIsSignUpMode(false);
   };
-  const router = useRouter();
-
   const goBack = () => {
-    router.push('/');
+    routers.push('/');
   };
+
+
   return (
     <div>
 
@@ -28,23 +78,25 @@ const Enregistrement = () => {
       <div className={`container_sign_in ${isSignUpMode ? 'sign-up-mode' : ''}`}>
         <div className="forms-container">
           <div className="signin-signup">
-            <form action="#" className="sign-in-form">
+            {/*Sign-in- Form*/}
+            <form className="sign-in-form" onSubmit={handleSignInSubmit}>
               <h2 className="title">Connexion</h2>
               <div className="input-field">
-                {/*<i className="fas fa-envelope"></i>*/}
                 <FontAwesomeIcon className={"fontAwesomeIcon"} icon={faEnvelope} />
-                <input type="text" placeholder="Email" />
+                <input type="text" placeholder="Email" value={signInEmail}
+                       onChange={(e) => setSignInEmail(e.target.value)} />
               </div>
               <div className="input-field">
                 <FontAwesomeIcon className={"fontAwesomeIcon"} icon={faLock} />
-                <input type="password" placeholder="Mot de passe" />
+                <input type="password" placeholder="Mot de passe" value={signInPassword}
+                       onChange={(e) => setSignInPassword(e.target.value)} />
               </div>
               <input type="submit" value="Connexion" className="btn solid" />
               <p className="social-text">Connectez-vous avez vos réseaux</p>
               <div className="social-media">
 
                 <a href="#" className="social-icon">
-                  <FontAwesomeIcon icon={faFacebookF}/>
+                  <FontAwesomeIcon icon={faFacebookF} />
                 </a>
                 <a href="#" className="social-icon">
                   <FontAwesomeIcon icon={faLinkedinIn} />
@@ -54,20 +106,25 @@ const Enregistrement = () => {
                 </a>
               </div>
             </form>
-            <form action="#" className="sign-up-form">
+
+
+            {/*Sign-up- Form*/}
+            <form className="sign-up-form" onSubmit={handleSignUpSubmit}>
               <h2 className="title">Inscription</h2>
               <div className="input-field">
                 <FontAwesomeIcon className={"fontAwesomeIcon"} icon={faUser} />
-                <input type="text" placeholder="Nom" />
+                <input type="text" placeholder="Nom" value={signUpName}
+                       onChange={(e) => setSignUpName(e.target.value)} />
               </div>
               <div className="input-field">
                 <FontAwesomeIcon className={"fontAwesomeIcon"} icon={faEnvelope} />
-                <input type="email" placeholder="Email" />
+                <input type="email" placeholder="Email" value={signUpEmail}
+                       onChange={(e) => setSignUpEmail(e.target.value)} />
               </div>
-
               <div className="input-field">
                 <FontAwesomeIcon className={"fontAwesomeIcon"} icon={faLock} />
-                <input type="password" placeholder="Mot de passe" />
+                <input type="password" placeholder="Mot de passe" value={signUpPassword}
+                       onChange={(e) => setSignUpPassword(e.target.value)} />
               </div>
               <input type="submit" className="btn" value="Valider" />
               <p className="social-text">Inscrivez-vous avec vos réseaux</p>
