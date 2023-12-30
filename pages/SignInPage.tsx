@@ -6,7 +6,7 @@ const SignInPage = () => {
   return (
     <>
       <Head>
-        <title>Commute?</title>
+        <title>Login</title>
       </Head>
       <Enregistrement />
     </>
