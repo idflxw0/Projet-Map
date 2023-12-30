@@ -1,4 +1,8 @@
 <?php
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Content-Type: application/json');
+
 header('Content-Type: application/json');
 
 if (isset($_COOKIE['user'])) {

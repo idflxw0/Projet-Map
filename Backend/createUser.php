@@ -19,7 +19,7 @@ function createResponse($name, $email, $password) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    //database connection
+    //dtatbase connection
     $servername = "localhost";
     $username = "root";
     $password = "";
@@ -55,6 +55,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("sss", $name, $email, $password);
     $stmt->execute();
 
+    echo json_encode([
+        "message" => "User created successfully",
+        "user" => $name,
+        "success" => true
+    ]);
+
     // Close the connection and statement
     $stmt->close();
     $conn->close();
@@ -62,3 +68,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Call the function and echo its return value
     //echo createResponse($name,$email, $password);
 }
+?>
