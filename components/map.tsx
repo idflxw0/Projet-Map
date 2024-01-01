@@ -14,8 +14,10 @@ type DirectionsResult = google.maps.DirectionsResult;
 type MapOptions = google.maps.MapOptions;
 
 export default function Map() {
-  const [office, setOffice] = useState<LatLngLiteral>();
+  const [depart, setDepart] = useState<LatLngLiteral>();
+  const [arriver, setArriver] = useState<LatLngLiteral>();
   const [directions, setDirections] = useState<DirectionsResult>();
+  const [calculatedDistances, setCalculatedDistances] = useState<number[]>([]);
   const mapRef = useRef<GoogleMap>();
   const center = useMemo<LatLngLiteral>(
     () => ({ lat: 48.864716, lng: 2.349014}),
@@ -31,15 +33,27 @@ export default function Map() {
   );
   const onLoad = useCallback((map) => (mapRef.current = map), []);
   const houses = useMemo(() => generateHouses(center), [center]);
+  const calculateDistances = () => {
+    const distances: number[] = [];
+
+    houses.forEach((house) => {
+      fetchDirections(house);
+      // Assuming setDirections sets the distance in state
+      // Modify accordingly based on your implementation
+      distances.push(/* Get distance from state or any other method */);
+    });
+
+    setCalculatedDistances(distances);
+  };
 
   const fetchDirections = (house: LatLngLiteral) => {
-    if (!office) return;
+    if (!depart || !arriver) return;
 
     const service = new google.maps.DirectionsService();
     service.route(
       {
-        origin: house,
-        destination: office,
+        origin: depart,
+        destination: arriver,
         travelMode: google.maps.TravelMode.DRIVING,
       },
       (result, status) => {
@@ -53,15 +67,27 @@ export default function Map() {
   return (
     <div className="container">
       <div className="controls">
-        <h1>Commute?</h1>
+        <h1>destination</h1>
+        {/* eslint-disable-next-line react/no-unescaped-entities */}
+        {!depart && <div className="Text">Entrer l'adress de depart</div>}
         <Places
           setOffice={(position) => {
-            setOffice(position);
+            setDepart(position);
             mapRef.current?.panTo(position);
           }}
         />
-        {!office && <p>Enter the address of your office.</p>}
+        {/* eslint-disable-next-line react/no-unescaped-entities */}
+        {!arriver && <div className="Text">entrer l'adress de votre destination</div>}
+        <Places
+          setOffice={(position) => {
+            setArriver(position);
+            mapRef.current?.panTo(position);
+          }}
+        />
+        <button onClick={calculateDistances} className="Button">Calculate Distances</button>
         {directions && <Distance leg={directions.routes[0].legs[0]} />}
+
+
       </div>
       <div className="map">
         <GoogleMap
@@ -84,9 +110,9 @@ export default function Map() {
             />
           )}
 
-          {office && (
+          {depart && (
             <>
-              <Marker position={office}>
+              <Marker position={depart}>
                 <img src={process.env.PUBLIC_URL + "/location.png"} alt="actual Location" />
               </Marker>
 
