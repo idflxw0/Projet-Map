@@ -3,6 +3,8 @@ const litresPerKM = 10 / 100;
 const gasLitreCost = 1.5;
 const litreCostKM = litresPerKM * gasLitreCost;
 const secondsPerDay = 60 * 60 * 24;
+const co2PerLitre = 2.3; // Example: assuming 2.3 kg of CO2 per liter of fuel
+
 
 type DistanceProps = {
   leg: google.maps.DirectionsLeg;
@@ -18,6 +20,10 @@ export default function Distance({ leg }: DistanceProps) {
     (leg.distance.value / 1000) * litreCostKM * commutesPerYear
   );
 
+  const co2Emissions = Math.floor(
+    (leg.distance.value / 1000) * litresPerKM * co2PerLitre
+  );
+
   return (
     <div>
       <p>
@@ -26,13 +32,21 @@ export default function Distance({ leg }: DistanceProps) {
         <span className="highlight">{leg.duration.text}</span> each direction.
       </p>
 
-      <p>
+      {/*<p>
         That is <span className="highlight">{days} days</span> in your car each
         year at a cost of{" "}
         <span className="highlight">
           ${new Intl.NumberFormat().format(cost)}
         </span>
         .
+      </p>*/}
+
+      <p>
+        The estimated CO2 emissions for the ride would be{" "}
+        <span className="highlight">
+          {new Intl.NumberFormat().format(co2Emissions)} kg
+        </span>{" "}
+        of CO2 per trip.
       </p>
     </div>
   );
