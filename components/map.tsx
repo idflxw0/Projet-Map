@@ -83,12 +83,14 @@ export default function Map() {
             setArriver(position);
             mapRef.current?.panTo(position);
           }}
+          showLocateMeButton={false} // Disable the button for the second Places component
+
         />
         <button onClick={calculateDistances} className="Button">Calculate Distances</button>
         {directions && <Distance leg={directions.routes[0].legs[0]} />}
-
-
       </div>
+
+
       <div className="map">
         <GoogleMap
           zoom={10}

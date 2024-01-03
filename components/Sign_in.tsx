@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/router';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookF, faGoogle, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import { Router } from "../Backend/Router";

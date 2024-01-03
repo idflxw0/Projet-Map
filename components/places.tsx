@@ -13,9 +13,11 @@ import "@reach/combobox/styles.css";
 
 type PlacesProps = {
   setOffice: (position: google.maps.LatLngLiteral) => void;
+  showLocateMeButton: boolean; // Optional prop to control the visibility of the button
+
 };
 
-export default function Places({ setOffice }: PlacesProps) {
+export default function Places({ setOffice, showLocateMeButton = true }: PlacesProps) {
   const {
     ready,
     value,
@@ -31,6 +33,27 @@ export default function Places({ setOffice }: PlacesProps) {
     const results = await getGeocode({ address: val });
     const { lat, lng } = await getLatLng(results[0]);
     setOffice({ lat, lng });
+  };
+
+  const handleLocateMe = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          const results = await getGeocode({
+            location: { lat: latitude, lng: longitude },
+          });
+          const address = results[0]?.formatted_address || '';
+          setValue(address);
+          setOffice({ lat: latitude, lng: longitude });
+        },
+        (error) => {
+          console.error('Error getting geolocation:', error);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+    }
   };
 
   return (
@@ -50,6 +73,12 @@ export default function Places({ setOffice }: PlacesProps) {
             ))}
         </ComboboxList>
       </ComboboxPopover>
+
+      {showLocateMeButton && <button onClick={handleLocateMe}>Locate Me</button>}
+
     </Combobox>
   );
 }
+
+
+
