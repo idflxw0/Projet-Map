@@ -70,11 +70,11 @@ a {
   border-radius: 5px;
 }
 
-.dropdown-icon {
+/*.dropdown-icon {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-image: url('../public/pp.jpg');
+  !*background-image: url('../public/pp.jpg');*!
   background-size: cover;
   background-position: center;
   cursor: pointer;
@@ -82,7 +82,7 @@ a {
   top: 10px;
   right: 10px;
   z-index: 1000;
-}
+}*/
 
 .dropdown-content {
   position: absolute;
@@ -111,9 +111,6 @@ a {
   background-color: white;
   border-left: 1px solid gray;
   border-top: 1px solid gray;
-}
-.dropdown-icon.active + .dropdown-content {
-  display: block;
 }
 
 .dropdown-icon.active + .dropdown-content {
