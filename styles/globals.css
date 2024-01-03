@@ -70,4 +70,69 @@ a {
   border-radius: 5px;
 }
 
+.dropdown-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-image: url('../public/pp.jpg');
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+}
+
+.dropdown-content {
+  position: absolute;
+  display: none;
+  right: 10px;
+  top: 60px;
+  min-width: 160px;
+  padding: 15px;
+  border-radius: 15px;
+  z-index: 1;
+  border: 1px solid gray;
+  background-color: white;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
+}
+.dropdown-content::before {
+  content: '';
+  position: absolute;
+  top: -0.5rem;
+  right: 0.8rem;
+  width: 15px;
+  height: 15px;
+  transform: rotate(45deg);
+  background-color: white;
+  border-left: 1px solid gray;
+  border-top: 1px solid gray;
+}
+.dropdown-icon.active + .dropdown-content {
+  display: block;
+}
+
+.dropdown-icon.active + .dropdown-content {
+  display: block; /* Show dropdown content when the icon is clicked */
+}
+
+.dropdown-content a {
+  border-radius: 10px;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  white-space: nowrap;
+
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+
 
