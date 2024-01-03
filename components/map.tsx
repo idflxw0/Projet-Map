@@ -115,6 +115,9 @@ export default function Map() {
               <Marker position={depart}>
                 <img src={process.env.PUBLIC_URL + "/location.png"} alt="actual Location" />
               </Marker>
+              <Marker position={arriver}>
+                <img src={process.env.PUBLIC_URL + "/location.png"} alt="actual Location" />
+              </Marker>
 
               {/*<MarkerClusterer>
                 {(clusterer) =>
