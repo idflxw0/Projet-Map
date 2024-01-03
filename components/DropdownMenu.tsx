@@ -1,51 +1,74 @@
 import React, { useEffect, useRef, useState } from "react";
-import{ isUserLoggedIn } from "./Sign_in";
+import { isUserLoggedIn, logout } from "./Sign_in";
+import styled from 'styled-components';
+
+interface DropdownIconProps extends React.HTMLProps<HTMLDivElement> {
+  backgroundImage: string;
+}
+
+const DropdownIcon = styled.div<DropdownIconProps>`
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-image: url('${props => props.backgroundImage}');
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+`;
 
 export const DropdownMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
-  let [isLoggedIn, setIsLoggedIn] = useState(false);
+  let [isLoggedIn, setIsLoggedIn] = useState(isUserLoggedIn());
   isLoggedIn = isUserLoggedIn();
-  // Specify the type of the ref as HTMLDivElement
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  let defaultProfilePic = isLoggedIn ? "/pp.jpg" : "logout.jpg";
+  const setLoggedout = () => {
+    logout();
+    setIsLoggedIn(false);
+    window.location.reload();
+  }
 
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const toggleDropdown = () => setIsOpen(!isOpen);
 
-  const handleDoubleClick = (event: { preventDefault: () => void; }) => {
+  const handleDoubleClick = (event: React.MouseEvent) => {
     event.preventDefault();
   };
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Type assertion: event.target as Node
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
 
-    // Bind the event listener
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      // Unbind the event listener on clean up
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [dropdownRef]);
 
+  console.log(defaultProfilePic);
   return (
     <div ref={dropdownRef}>
-      <div className={`dropdown-icon${isOpen ? ' active' : ''}`} onClick={toggleDropdown}>
-        {/* Icon content here */}
-      </div>
+      <DropdownIcon
+        className={`dropdown-icon${isOpen ? ' active' : ''}`}
+        onClick={toggleDropdown}
+        backgroundImage={defaultProfilePic}
+      />
       {isOpen && (
         <div className="dropdown-content" onDoubleClick={handleDoubleClick}>
           {isLoggedIn ? (
             <>
               <a href="/profile">Profile</a>
               <a href="/settings">Settings</a>
-              <a href="/logout" onClick={() => setIsLoggedIn(false)}>Logout</a> {/* Implement logout logic here */}
+              <a href="#" onClick={setLoggedout}>Logout</a>
             </>
           ) : (
             <>
-              <a href="./SignInPage" onClick={() => setIsLoggedIn(true)}>Login</a> {/* Implement login logic here */}
+              <a href="./SignInPage">Login</a>
               <a href="./SignInPage">Sign Up</a>
             </>
           )}
@@ -54,4 +77,3 @@ export const DropdownMenu = () => {
     </div>
   );
 };
-
