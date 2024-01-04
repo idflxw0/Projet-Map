@@ -10,7 +10,7 @@ import {
   ComboboxOption,
 } from "@reach/combobox";
 import "@reach/combobox/styles.css";
-
+import { DropdownMenu } from "./DropdownMenu";
 type PlacesProps = {
   setOffice: (position: google.maps.LatLngLiteral) => void;
   showLocateMeButton: boolean; // Optional prop to control the visibility of the button
@@ -57,27 +57,29 @@ export default function Places({ setOffice, showLocateMeButton = true }: PlacesP
   };
 
   return (
-    <Combobox onSelect={handleSelect}>
-      <ComboboxInput
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        disabled={!ready}
-        className="combobox-input"
-        placeholder="Search office address"
-      />
-      <ComboboxPopover>
-        <ComboboxList>
-          {status === "OK" &&
-            data.map(({ place_id, description }) => (
-              <ComboboxOption key={place_id} value={description} />
-            ))}
-        </ComboboxList>
-      </ComboboxPopover>
+    <>
+      <DropdownMenu />
+      <Combobox onSelect={handleSelect}>
+        <ComboboxInput
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          disabled={!ready}
+          className="combobox-input"
+          placeholder="Search office address" />
+        <ComboboxPopover>
+          <ComboboxList>
+            {status === "OK" &&
+              data.map(({ place_id, description }) => (
+                <ComboboxOption key={place_id} value={description} />
+              ))}
+          </ComboboxList>
+        </ComboboxPopover>
 
-      {showLocateMeButton && <button onClick={handleLocateMe}>Locate Me</button>}
+        {showLocateMeButton && <button onClick={handleLocateMe}>Locate Me</button>}
+      </Combobox></>
 
-    </Combobox>
   );
+
 }
 
 

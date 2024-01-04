@@ -4,6 +4,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookF, faGoogle, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import { Router } from "../Backend/Router";
+import exp from "node:constants";
+export const isUserLoggedIn = () => {
+  const user = localStorage.getItem('user');
+  console.log(user);
+  return user !== null;
+};
+
+export const logout = () => {
+  localStorage.removeItem('user');
+};
 const Enregistrement = () => {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
   const [signInEmail, setSignInEmail] = useState('');
@@ -12,12 +22,6 @@ const Enregistrement = () => {
   const [signUpEmail, setSignUpEmail] = useState('');
   const [signUpPassword, setSignUpPassword] = useState('');
   const routers = useRouter();
-
-  const isUserLoggedIn = () => {
-    const user = localStorage.getItem('user');
-    console.log(user);
-    return user !== null;
-  };
 
   // Call this function when your app/component loads
   useEffect(() => {

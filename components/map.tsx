@@ -147,6 +147,7 @@ export default function Map() {
       </div>
     </div>
   );
+
 }
 
 const defaultOptions = {
