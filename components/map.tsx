@@ -8,6 +8,8 @@ import {
 } from "@react-google-maps/api";
 import Places from "./places";
 import Distance from "./distance";
+import MainComponent from './MainComponent';
+
 
 type LatLngLiteral = google.maps.LatLngLiteral;
 type DirectionsResult = google.maps.DirectionsResult;
@@ -26,7 +28,7 @@ export default function Map() {
   const options = useMemo<MapOptions>(
     () => ({
       mapId: "9dd822bc7a3962da",
-      disableDefaultUI: true,
+      disableDefaultUI: false,
       clickableIcons: true,
     }),
     []
@@ -75,7 +77,7 @@ export default function Map() {
             setDepart(position);
             mapRef.current?.panTo(position);
           }}
-        />
+         showLocateMeButton/>
         {/* eslint-disable-next-line react/no-unescaped-entities */}
         {!arriver && <div className="Text">entrer l'adress de votre destination</div>}
         <Places
