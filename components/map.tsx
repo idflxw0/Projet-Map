@@ -8,6 +8,7 @@ import {
 } from "@react-google-maps/api";
 import Places from "./places";
 import Distance from "./distance";
+import locations from '../data/your-json-file.json';
 
 type LatLngLiteral = google.maps.LatLngLiteral;
 type DirectionsResult = google.maps.DirectionsResult;
@@ -28,6 +29,7 @@ export default function Map() {
       mapId: "9dd822bc7a3962da",
       disableDefaultUI: true,
       clickableIcons: true,
+      minZoom: 3,
     }),
     []
   );
