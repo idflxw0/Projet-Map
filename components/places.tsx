@@ -11,7 +11,6 @@ import {
 } from "@reach/combobox";
 import "@reach/combobox/styles.css";
 import { DropdownMenu } from "./DropdownMenu";
-import IconButtons from './IconBar';
 type PlacesProps = {
   setOffice: (position: google.maps.LatLngLiteral) => void;
   showLocateMeButton: boolean; // Optional prop to control the visibility of the button
@@ -60,7 +59,6 @@ export default function Places({ setOffice, showLocateMeButton = true }: PlacesP
   return (
     <>
       <DropdownMenu />
-      <IconButtons />
       <Combobox onSelect={handleSelect}>
         <ComboboxInput
           value={value}
