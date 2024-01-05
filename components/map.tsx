@@ -8,7 +8,6 @@ import {
 } from "@react-google-maps/api";
 import Places from "./places";
 import Distance from "./distance";
-import MapControls from './MapControls'; // Adjust the import path as needed
 
 
 type LatLngLiteral = google.maps.LatLngLiteral;
@@ -68,7 +67,7 @@ export default function Map() {
 
   return (
     <div className="container">
-     {/* <div className="controls">
+      <div className="controls">
         <h1>destination</h1>
          eslint-disable-next-line react/no-unescaped-entities
         {!depart && <div className="Text">Entrer l'adress de depart</div>}
@@ -90,8 +89,7 @@ export default function Map() {
         />
         <button onClick={calculateDistances} className="Button">Calculate Distances</button>
         {directions && <Distance leg={directions.routes[0].legs[0]} />}
-      </div>*/}
-      <MapControls />
+      </div>
 
 
       <div className="map">
