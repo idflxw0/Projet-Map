@@ -16,7 +16,8 @@ type PlacesProps = {
   showLocateMeButton: boolean; // Optional prop to control the visibility of the button
 
 };
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCrosshairs, faLocationArrow } from "@fortawesome/free-solid-svg-icons";
 export default function Places({ setOffice, showLocateMeButton = true }: PlacesProps) {
   const {
     ready,
@@ -59,26 +60,36 @@ export default function Places({ setOffice, showLocateMeButton = true }: PlacesP
   return (
     <>
       <DropdownMenu />
-      <Combobox onSelect={handleSelect}>
-        <ComboboxInput
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          disabled={!ready}
-          className="combobox-input"
-          placeholder="Address" />
-        <ComboboxPopover>
-          <ComboboxList>
-            {status === "OK" &&
-              data.map(({ place_id, description }) => (
-                <ComboboxOption key={place_id} value={description} />
-              ))}
-          </ComboboxList>
-        </ComboboxPopover>
 
-        {showLocateMeButton && <button onClick={handleLocateMe}>Locate Me</button>}
-      </Combobox></>
+      <div className="places-container">
+        <Combobox onSelect={handleSelect}>
+          <ComboboxInput
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            disabled={!ready}
+            className="combobox-input"
+            placeholder="Address"
+          />
+          <ComboboxPopover>
+            <ComboboxList>
+              {status === "OK" &&
+                data.map(({ place_id, description }) => (
+                  <ComboboxOption key={place_id} value={description} />
+                ))}
+            </ComboboxList>
+          </ComboboxPopover>
+        </Combobox>
 
+        {showLocateMeButton && (
+          <button className="locate-me-button" onClick={handleLocateMe}>
+            <FontAwesomeIcon icon={faCrosshairs} size="2x" />
+          </button>
+        )}
+      </div>
+
+    </>
   );
+
 
 }
 

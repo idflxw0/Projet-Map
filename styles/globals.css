@@ -160,8 +160,7 @@ a {
 }
 
 
-/* Add this to your existing CSS or create a new CSS file */
-/* Add this to your existing CSS or create a new CSS file */
+/* fold button */
 .FoldButton {
   background-color: #4CAF50;
   border: none;
@@ -178,5 +177,37 @@ a {
   &:hover {
     background-color: #45a049;
   }
+}
+
+
+/* locate button */
+
+
+.places-container {
+  display: flex;
+  align-items: center;
+}
+
+.combobox-input {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #3498db;
+  border-radius: 5px;
+}
+
+.combobox-input:focus {
+  outline: none;
+  border-color: #2980b9;
+}
+
+.locate-me-button {
+  background-color: #3498db ;
+  border: none;
+  color: white;
+  padding: 10.7px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
 }
 
