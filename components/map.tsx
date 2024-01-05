@@ -1,5 +1,6 @@
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import IconBar from "./IconBar";
+import { FaUtensils, FaHotel, FaChargingStation , FaLandmark, FaSubway, FaCapsules, FaMoneyBillAlt } from 'react-icons/fa';
 import {
   GoogleMap,
   Marker,
@@ -14,6 +15,8 @@ import locations from '../data/extracted_data.json';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
+import { faChargingStation } from '@fortawesome/free-solid-svg-icons';
+import chargingStationIcon from "../public/charging.png";
 
 type LatLngLiteral = google.maps.LatLngLiteral;
 type DirectionsResult = google.maps.DirectionsResult;
@@ -28,6 +31,10 @@ export default function Map() {
   const [visibleChargingStations, setVisibleChargingStations] = useState<Location[]>([]);
   const [selectedMarker, setSelectedMarker] = useState<Location | null>(null);
   const [showCharging, setShowCharging] = useState(false);
+  const [currentIcon, setCurrentIcon] = useState('');
+  const [zoomLevel, setZoomLevel] = useState(10); // Default zoom level
+
+
   const mapRef = useRef<google.maps.Map>();
   const center = useMemo<LatLngLiteral>(
     () => ({ lat: 48.864716, lng: 2.349014}),
@@ -43,12 +50,13 @@ export default function Map() {
   const options = useMemo<MapOptions>(
     () => ({
       mapId: "9dd822bc7a3962da",
-      disableDefaultUI: false,
+      disableDefaultUI: true,
       clickableIcons: true,
       minZoom: 3,
     }),
     []
   );
+
 
   const onLoad = useCallback((map) =>{
     (mapRef.current = map);
@@ -98,39 +106,23 @@ export default function Map() {
     );
   };
 
-  const isWithinRadius = (center: { lat: number; lng: number; }, location: { lat: number; lng: number; }, radius: number) => {
-    const rad = (x: number) => (x * Math.PI) / 180;
-    const R = 6371; // Earth’s mean radius in kilometers
-
-    const dLat = rad(location.lat - center.lat);
-    const dLong = rad(location.lng - center.lng);
-
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(rad(center.lat)) *
-      Math.cos(rad(location.lat)) *
-      Math.sin(dLong / 2) *
-      Math.sin(dLong / 2);
-
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const d = R * c;
-
-    return d <= radius; // returns true if within radius, false otherwise
-  };
-
   const handleIconClick = (iconType: string) => {
     if (iconType === 'charging') {
+      setCurrentIcon('charging_station');
       showChargingStations();
     }
 
   };
 
+
+
   const showChargingStations = () => {
     if (showCharging) {
       setVisibleChargingStations([]);
       setShowCharging(false);
+      setCurrentIcon('');
 
-    } else {
+    } else if (zoomLevel > 11){
       const stations = locations.filter((location) => {
         const loc = new google.maps.LatLng(parseFloat(location.Xlatitude), parseFloat(location.Xlongitude));
         return bounds && bounds.contains(loc); // Ensure bounds is not null
@@ -139,17 +131,53 @@ export default function Map() {
         Xlongitude: location.Xlongitude,
         ad_station: location.ad_station
       }));
-
       setVisibleChargingStations(stations);
       setShowCharging(true);
     }
-
-
-
   };
 
+  const countMarkersInView = () => {
+    if (!bounds) {
+      return 0;
+    }
+    return visibleChargingStations.filter(station => {
+      const location = new google.maps.LatLng(parseFloat(station.Xlatitude), parseFloat(station.Xlongitude));
+      return bounds.contains(location);
+    }).length;
+  };
+  const clusterStyles = [
+    {
+      textColor: '#FFFFFF',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m1.png',
+      height: 50,
+      width: 50,
+    },
+    {
+      textColor: '#FFFFFF',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m2.png',
+      height: 60,
+      width: 60,
+    },
+    {
+      textColor: '#FFFFFF',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m3.png',
+      height: 70,
+      width: 70,
+    },
+  ];
+  const [currentClusterStyle, setCurrentClusterStyle] = useState(clusterStyles[0]);
 
-  // @ts-ignore
+  const determineClusterStyle = (zoomLevel: number) => {
+    if (zoomLevel > 10 && zoomLevel <= 11) {
+      return clusterStyles[0];
+    } else if (zoomLevel >= 7 && zoomLevel < 10) {
+      return clusterStyles[1];
+    } else if(zoomLevel < 7) {
+      return clusterStyles[2];
+    }
+    return clusterStyles[0];
+  };
+
   return (
     <div className="container">
       <IconBar onIconClick={handleIconClick} />
@@ -180,9 +208,8 @@ export default function Map() {
         {isControlsFolded ? <FontAwesomeIcon icon={faChevronRight} /> : <FontAwesomeIcon icon={faChevronLeft} />}
       </button>
 
-
-
       <div className={`map ${isControlsFolded ? 'folded' : ''}`}>
+
         <GoogleMap
           zoom={10}
           center={center}
@@ -194,25 +221,62 @@ export default function Map() {
               setBounds(mapRef.current.getBounds() as google.maps.LatLngBounds);
             }
           }}
+          onZoomChanged={() => {
+            if (mapRef.current) {
+              const newZoomLevel = mapRef.current.getZoom();
+              if (typeof newZoomLevel === 'number') {
+                setZoomLevel(newZoomLevel);
+                // console.log(newZoomLevel);
+                const styleToUse = determineClusterStyle(newZoomLevel);
+                setCurrentClusterStyle(styleToUse);
+              }
+            }
+          }}
         >
-          {visibleChargingStations.map((station, index) => (
-            <Marker
-              key={index}
-              position={{ lat: parseFloat(station.Xlatitude), lng: parseFloat(station.Xlongitude) }}
-              onClick={() => onMarkerClick(station)}
-            >
-              {selectedMarker && selectedMarker.ad_station === station.ad_station && (
-                <InfoWindow
-                  position={{ lat: parseFloat(station.Xlatitude), lng: parseFloat(station.Xlongitude) }}
-                  onCloseClick={() => setSelectedMarker(null)}
-                >
-                  <div className="info-window-content">
-                    {station.ad_station}
-                  </div>
-                </InfoWindow>
-              )}
-            </Marker>
-          ))}
+
+
+        {visibleChargingStations.map((station, index) => {
+          if (zoomLevel > 11) {
+            return (<Marker
+                key={index}
+                position={{ lat: parseFloat(station.Xlatitude), lng: parseFloat(station.Xlongitude) }}
+                onClick={() => onMarkerClick(station)}
+              >
+                {selectedMarker && selectedMarker.ad_station === station.ad_station && (
+                  <InfoWindow
+                    position={{ lat: parseFloat(station.Xlatitude), lng: parseFloat(station.Xlongitude) }}
+                    onCloseClick={() => setSelectedMarker(null)}
+                  >
+                    <div className="info-window-content">
+                      {station.ad_station}
+                    </div>
+                  </InfoWindow>
+                )}
+              </Marker>
+            );
+          } else return null;
+
+        })
+        }
+          {
+            zoomLevel < 11 && (
+              <MarkerClusterer styles={[currentClusterStyle]} >
+                {(clusterer) =>
+                  visibleChargingStations.map((station, index) => (
+                    <Marker
+                      key={index}
+                      position={{
+                        lat: parseFloat(station.Xlatitude),
+                        lng: parseFloat(station.Xlongitude)
+                      }}
+                      clusterer={clusterer}
+                      onClick={() => onMarkerClick(station)}
+                    />
+                  ))
+                }
+              </MarkerClusterer >
+            )
+          }
 
           {directions && (
             <DirectionsRenderer
@@ -226,33 +290,21 @@ export default function Map() {
               }}
             />
           )}
-
           {depart && (
             <>
-              <Marker position={depart}>
-                <img src={process.env.PUBLIC_URL + "/location.png"} alt="actual Location" />
-              </Marker>
+              <Marker
+                position={depart}
+                icon={process.env.PUBLIC_URL + "/charging.png"}
+              />
               {arriver && (
-                <Marker position={arriver}>
-                  <img src={process.env.PUBLIC_URL + "/location.png"} alt="actual Location" />
-                </Marker>
+                <Marker
+                  position={arriver}
+                  icon={process.env.PUBLIC_URL + "/location.png"}
+                />
               )}
 
 
-              {/*<MarkerClusterer>
-                {(clusterer) =>
-                  houses.map((house) => (
-                    <Marker
-                      key={house.lat}
-                      position={house}
-                      clusterer={clusterer}
-                      onClick={() => {
-                        fetchDirections(house);
-                      }}
-                    />
-                  ))
-                }
-              </MarkerClusterer>*/}
+
 
               {/*<Circle center={office} radius={15000} options={closeOptions} />
               <Circle center={office} radius={30000} options={middleOptions} />
@@ -265,6 +317,32 @@ export default function Map() {
   );
 
 }
+
+
+const mapContainerStyle = {
+  strokeOpacity: 0.5,
+  strokeWeight: 2,
+  clickable: false,
+  draggable: false,
+  editable: false,
+  visible: true,
+};
+
+const center = {
+  ...mapContainerStyle,
+  zIndex: 3,
+  fillOpacity: 0.05,
+  strokeColor: "#8BC34A",
+  fillColor: "#8BC34A",
+};
+
+const options = {
+  ...mapContainerStyle,
+  zIndex: 2,
+  fillOpacity: 0.05,
+  strokeColor: "#FBC02D",
+  fillColor: "#FBC02D",
+};
 
 const defaultOptions = {
   strokeOpacity: 0.5,
@@ -296,6 +374,17 @@ const farOptions = {
   fillColor: "#FF5252",
 };
 
+const clusterStyles = [
+  {
+    textColor: 'white',
+    url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"><circle cx="15" cy="15" r="10" fill="#FF0000" /></svg>',
+    height: 30,
+    width: 30
+  },
+  // Add more styles for larger clusters if needed
+];
+
+
 const generateHouses = (position: LatLngLiteral) => {
   const _houses: Array<LatLngLiteral> = [];
   for (let i = 0; i < 100; i++) {
@@ -307,3 +396,5 @@ const generateHouses = (position: LatLngLiteral) => {
   }
   return _houses;
 };
+
+

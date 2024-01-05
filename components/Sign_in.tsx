@@ -7,7 +7,6 @@ import { Router } from "../Backend/Router";
 import exp from "node:constants";
 export const isUserLoggedIn = () => {
   const user = localStorage.getItem('user');
-  console.log(user);
   return user !== null;
 };
 

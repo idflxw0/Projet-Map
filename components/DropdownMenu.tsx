@@ -50,7 +50,6 @@ export const DropdownMenu = () => {
     };
   }, [dropdownRef]);
 
-  console.log(defaultProfilePic);
   return (
     <div ref={dropdownRef}>
       <DropdownIcon
