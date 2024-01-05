@@ -36,10 +36,21 @@ a {
   height: 100vh;
 }
 
-.map {
+/*.map {
   width: 80%;
   height: 100vh;
+}*/
+/* Add this to your existing CSS or create a new CSS file */
+.map {
+  width: calc(100% - 20%); /* Initial width based on controls width */
+  transition: width 0.3s ease; /* Add transition for smooth animation */
+
+  /* Add styles for the folded state */
+  &.folded {
+    width: 100%;
+  }
 }
+
 
 .highlight {
   font-size: 1.25rem;
@@ -142,4 +153,30 @@ a {
    word-wrap: break-word;
    white-space: normal;
  }
+.controls.folded {
+  width: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+
+/* Add this to your existing CSS or create a new CSS file */
+/* Add this to your existing CSS or create a new CSS file */
+.FoldButton {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 30px; /* Adjust font size for a slimmer button */
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease; /* Add transition for smooth color change */
+
+  /* Add hover effect */
+  &:hover {
+    background-color: #45a049;
+  }
+}
 

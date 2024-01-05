@@ -11,6 +11,8 @@ import {
 import Places from "./places";
 import Distance from "./distance";
 import locations from '../data/extracted_data.json';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
 
 type LatLngLiteral = google.maps.LatLngLiteral;
@@ -31,6 +33,13 @@ export default function Map() {
     () => ({ lat: 48.864716, lng: 2.349014}),
     []
   );
+  // Inside the component function
+  const [isControlsFolded, setIsControlsFolded] = useState(false);
+
+  const toggleControls = () => {
+    setIsControlsFolded((prevIsControlsFolded) => !prevIsControlsFolded);
+  };
+
   const options = useMemo<MapOptions>(
     () => ({
       mapId: "9dd822bc7a3962da",
@@ -140,12 +149,13 @@ export default function Map() {
   };
 
 
+  // @ts-ignore
   return (
     <div className="container">
       <IconBar onIconClick={handleIconClick} />
-      <div className="controls">
+      <div className={`controls ${isControlsFolded ? 'folded' : ''}`}>
         <h1>destination</h1>
-         eslint-disable-next-line react/no-unescaped-entities
+        {/* eslint-disable-next-line react/no-unescaped-entities */}
         {!depart && <div className="Text">Entrer l'adress de depart</div>}
         <Places
           setOffice={(position) => {
@@ -153,7 +163,7 @@ export default function Map() {
             mapRef.current?.panTo(position);
           }}
          showLocateMeButton/>
-         eslint-disable-next-line react/no-unescaped-entities
+        {/* eslint-disable-next-line react/no-unescaped-entities */}
         {!arriver && <div className="Text">entrer l'adress de votre destination</div>}
         <Places
           setOffice={(position) => {
@@ -166,9 +176,13 @@ export default function Map() {
         <button onClick={calculateDistances} className="Button">Calculate Distances</button>
         {directions && <Distance leg={directions.routes[0].legs[0]} />}
       </div>
+      <button onClick={toggleControls} className="FoldButton">
+        {isControlsFolded ? <FontAwesomeIcon icon={faChevronRight} /> : <FontAwesomeIcon icon={faChevronLeft} />}
+      </button>
 
 
-      <div className="map">
+
+      <div className={`map ${isControlsFolded ? 'folded' : ''}`}>
         <GoogleMap
           zoom={10}
           center={center}
@@ -218,9 +232,12 @@ export default function Map() {
               <Marker position={depart}>
                 <img src={process.env.PUBLIC_URL + "/location.png"} alt="actual Location" />
               </Marker>
-              <Marker position={arriver}>
-                <img src={process.env.PUBLIC_URL + "/location.png"} alt="actual Location" />
-              </Marker>
+              {arriver && (
+                <Marker position={arriver}>
+                  <img src={process.env.PUBLIC_URL + "/location.png"} alt="actual Location" />
+                </Marker>
+              )}
+
 
               {/*<MarkerClusterer>
                 {(clusterer) =>
