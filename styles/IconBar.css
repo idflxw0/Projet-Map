@@ -1,0 +1,57 @@
+.icon-bar-container {
+    display: flex; /* Aligns items horizontally */
+    justify-content: space-around; /* Or 'space-between', depending on your design */
+    align-items: center; /* Centers items vertically within the bar */
+    width: 100%; /* Spans the full width of the viewport */
+    position: fixed; /* Keeps the bar at the top when scrolling */
+    top: 0; /* Positions the bar at the top of the viewport */
+    left: 0; /* Aligns the bar to the left side of the viewport */
+    z-index: 1000; /* Ensures the bar is above other content */
+    height: 50px; /* Set a fixed height for your icon bar */
+
+}
+
+.icon-bar-custom {
+    margin-top:2.4rem;
+    margin-left: 19rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    display: inline-flex;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    border-radius: 10px;
+
+}
+
+/* Style your buttons and icons as needed */
+.icon-bar-custom button {
+    background: none;
+    border: none;
+    margin: 0 10px;
+    padding: 9px 18px;
+    cursor: pointer;
+    display: flex; /* Use flexbox to align items */
+    align-items: center; /* Vertically center items */
+    justify-content: center; /* Horizontally center items (optional) */
+    background: white;
+    border-radius: 20px;
+    font-size: 15px;
+}
+
+.icon-bar-custom button:hover {
+
+
+    background-color: #ddd;
+}
+
+/* Style for the icons */
+.fa {
+    margin-right: 8px;
+    font-size: 22px; /* Change the size as needed */
+}
+.icon-bar-custom button span {
+    margin-left: 8px; /* Adjust the space between the icon and text */
+}

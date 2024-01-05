@@ -1,13 +1,16 @@
 import { useState, useMemo, useCallback, useRef } from "react";
+import IconBar from "./IconBar";
 import {
   GoogleMap,
   Marker,
   DirectionsRenderer,
+  InfoWindow,
   Circle,
   MarkerClusterer,
 } from "@react-google-maps/api";
 import Places from "./places";
 import Distance from "./distance";
+import locations from '../data/extracted_data.json';
 
 
 type LatLngLiteral = google.maps.LatLngLiteral;
@@ -19,7 +22,11 @@ export default function Map() {
   const [arriver, setArriver] = useState<LatLngLiteral>();
   const [directions, setDirections] = useState<DirectionsResult>();
   const [calculatedDistances, setCalculatedDistances] = useState<number[]>([]);
-  const mapRef = useRef<GoogleMap>();
+  const [bounds, setBounds] = useState<google.maps.LatLngBounds | null>(null);
+  const [visibleChargingStations, setVisibleChargingStations] = useState<Location[]>([]);
+  const [selectedMarker, setSelectedMarker] = useState<Location | null>(null);
+  const [showCharging, setShowCharging] = useState(false);
+  const mapRef = useRef<google.maps.Map>();
   const center = useMemo<LatLngLiteral>(
     () => ({ lat: 48.864716, lng: 2.349014}),
     []
@@ -29,10 +36,27 @@ export default function Map() {
       mapId: "9dd822bc7a3962da",
       disableDefaultUI: false,
       clickableIcons: true,
+      minZoom: 3,
     }),
     []
   );
-  const onLoad = useCallback((map) => (mapRef.current = map), []);
+
+  const onLoad = useCallback((map) =>{
+    (mapRef.current = map);
+    setBounds(map.getBounds());
+  },[]);
+
+  const onMarkerClick = (location: Location) => {
+    setSelectedMarker(location);
+  };
+
+  type Location = {
+    Xlatitude: string;
+    Xlongitude: string;
+    ad_station: string;
+  };
+
+
   const houses = useMemo(() => generateHouses(center), [center]);
   const calculateDistances = () => {
     const distances: number[] = [];
@@ -65,8 +89,60 @@ export default function Map() {
     );
   };
 
+  const isWithinRadius = (center: { lat: number; lng: number; }, location: { lat: number; lng: number; }, radius: number) => {
+    const rad = (x: number) => (x * Math.PI) / 180;
+    const R = 6371; // Earth’s mean radius in kilometers
+
+    const dLat = rad(location.lat - center.lat);
+    const dLong = rad(location.lng - center.lng);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(rad(center.lat)) *
+      Math.cos(rad(location.lat)) *
+      Math.sin(dLong / 2) *
+      Math.sin(dLong / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c;
+
+    return d <= radius; // returns true if within radius, false otherwise
+  };
+
+  const handleIconClick = (iconType: string) => {
+    if (iconType === 'charging') {
+      showChargingStations();
+    }
+
+  };
+
+  const showChargingStations = () => {
+    if (showCharging) {
+      setVisibleChargingStations([]);
+      setShowCharging(false);
+
+    } else {
+      const stations = locations.filter((location) => {
+        const loc = new google.maps.LatLng(parseFloat(location.Xlatitude), parseFloat(location.Xlongitude));
+        return bounds && bounds.contains(loc); // Ensure bounds is not null
+      }).map(location => ({
+        Xlatitude: location.Xlatitude,
+        Xlongitude: location.Xlongitude,
+        ad_station: location.ad_station
+      }));
+
+      setVisibleChargingStations(stations);
+      setShowCharging(true);
+    }
+
+
+
+  };
+
+
   return (
     <div className="container">
+      <IconBar onIconClick={handleIconClick} />
       <div className="controls">
         <h1>destination</h1>
          eslint-disable-next-line react/no-unescaped-entities
@@ -99,7 +175,31 @@ export default function Map() {
           mapContainerClassName="map-container"
           options={options}
           onLoad={onLoad}
+          onIdle={() => {
+            if (mapRef.current) {
+              setBounds(mapRef.current.getBounds() as google.maps.LatLngBounds);
+            }
+          }}
         >
+          {visibleChargingStations.map((station, index) => (
+            <Marker
+              key={index}
+              position={{ lat: parseFloat(station.Xlatitude), lng: parseFloat(station.Xlongitude) }}
+              onClick={() => onMarkerClick(station)}
+            >
+              {selectedMarker && selectedMarker.ad_station === station.ad_station && (
+                <InfoWindow
+                  position={{ lat: parseFloat(station.Xlatitude), lng: parseFloat(station.Xlongitude) }}
+                  onCloseClick={() => setSelectedMarker(null)}
+                >
+                  <div className="info-window-content">
+                    {station.ad_station}
+                  </div>
+                </InfoWindow>
+              )}
+            </Marker>
+          ))}
+
           {directions && (
             <DirectionsRenderer
               directions={directions}

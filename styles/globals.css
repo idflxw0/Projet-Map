@@ -132,4 +132,14 @@ a {
 }
 
 
+/*
+--------------------
+  MAP STYLES
+--------------------
+*/
+.info-window-content {
+   max-width: 160px; /* Adjust as needed */
+   word-wrap: break-word;
+   white-space: normal;
+ }
 
