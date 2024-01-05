@@ -130,3 +130,16 @@ a {
 .dropdown-content a:hover {
   background-color: #f1f1f1;
 }
+
+
+/*
+--------------------
+  MAP STYLES
+--------------------
+*/
+.info-window-content {
+   max-width: 160px; /* Adjust as needed */
+   word-wrap: break-word;
+   white-space: normal;
+ }
+

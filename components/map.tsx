@@ -4,6 +4,7 @@ import {
   GoogleMap,
   Marker,
   DirectionsRenderer,
+  InfoWindow,
   Circle,
   MarkerClusterer,
 } from "@react-google-maps/api";
@@ -21,10 +22,9 @@ export default function Map() {
   const [directions, setDirections] = useState<DirectionsResult>();
   const [calculatedDistances, setCalculatedDistances] = useState<number[]>([]);
   const [bounds, setBounds] = useState<google.maps.LatLngBounds | null>(null);
-  const [visibleChargingStations, setVisibleChargingStations] = useState<LatLngLiteral[]>([]);
+  const [visibleChargingStations, setVisibleChargingStations] = useState<Location[]>([]);
+  const [selectedMarker, setSelectedMarker] = useState<Location | null>(null);
   const [showCharging, setShowCharging] = useState(false);
-  const [selectedMarker, setSelectedMarker] = useState<LatLngLiteral | null>(null);
-
   const mapRef = useRef<google.maps.Map>();
   const center = useMemo<LatLngLiteral>(
     () => ({ lat: 48.864716, lng: 2.349014}),
@@ -45,10 +45,16 @@ export default function Map() {
     setBounds(map.getBounds());
   },[]);
 
-  const onMarkerClick = (location: LatLngLiteral) => {
+  const onMarkerClick = (location: Location) => {
     setSelectedMarker(location);
-    alert('You clicked on a marker');
   };
+
+  type Location = {
+    Xlatitude: string;
+    Xlongitude: string;
+    ad_station: string;
+  };
+
 
   const houses = useMemo(() => generateHouses(center), [center]);
   const calculateDistances = () => {
@@ -118,10 +124,12 @@ export default function Map() {
       const stations = locations.filter((location) => {
         const loc = new google.maps.LatLng(parseFloat(location.Xlatitude), parseFloat(location.Xlongitude));
         return bounds && bounds.contains(loc); // Ensure bounds is not null
-      }).map((location) => ({
-        lat: parseFloat(location.Xlatitude),
-        lng: parseFloat(location.Xlongitude)
+      }).map(location => ({
+        Xlatitude: location.Xlatitude,
+        Xlongitude: location.Xlongitude,
+        ad_station: location.ad_station
       }));
+
       setVisibleChargingStations(stations);
       setShowCharging(true);
     }
@@ -174,20 +182,22 @@ export default function Map() {
         >
           {visibleChargingStations.map((station, index) => (
             <Marker
+              key={index}
+              position={{ lat: parseFloat(station.Xlatitude), lng: parseFloat(station.Xlongitude) }}
               onClick={() => onMarkerClick(station)}
-              key={index}
-              position={station}
-            />
+            >
+              {selectedMarker && selectedMarker.ad_station === station.ad_station && (
+                <InfoWindow
+                  position={{ lat: parseFloat(station.Xlatitude), lng: parseFloat(station.Xlongitude) }}
+                  onCloseClick={() => setSelectedMarker(null)}
+                >
+                  <div className="info-window-content">
+                    {station.ad_station}
+                  </div>
+                </InfoWindow>
+              )}
+            </Marker>
           ))}
-          {/*{locations.filter((location) => {
-            const loc = new google.maps.LatLng(parseFloat(location.Xlatitude), parseFloat(location.Xlongitude));
-            return bounds && bounds.contains(loc);
-          }).map((location, index) => (
-            <Marker
-              key={index}
-              position={{ lat: parseFloat(location.Xlatitude), lng: parseFloat(location.Xlongitude) }}
-            />
-          ))}*/}
 
           {directions && (
             <DirectionsRenderer
