@@ -68,7 +68,7 @@ export default function Places({ setOffice, showLocateMeButton = true }: PlacesP
             onChange={(e) => setValue(e.target.value)}
             disabled={!ready}
             className="combobox-input"
-            placeholder="Address"
+            placeholder="Rechercher adresse..."
           />
           <ComboboxPopover>
             <ComboboxList>
