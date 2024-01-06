@@ -178,7 +178,25 @@ a {
     background-color: #45a049;
   }
 }
+.mode-selector {
+  display: flex;
 
+  gap: 10px; /* Adjust the spacing between buttons as needed */
+  margin-bottom: 1rem;
+}
+
+.mode-selector button {
+  background-color: #3498db ;
+  color: white;
+  border: solid 1px #3498db;
+  padding: 10.7px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  display: "flex";
+  justify-content: "center";
+  min-width: 60px;
+}
 
 /* locate button */
 

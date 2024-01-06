@@ -1,6 +1,5 @@
-import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import React, { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import IconBar from "./IconBar";
-import { FaUtensils, FaHotel, FaChargingStation , FaLandmark, FaSubway, FaCapsules, FaMoneyBillAlt } from 'react-icons/fa';
 import {
   GoogleMap,
   Marker,
@@ -13,7 +12,7 @@ import Places from "./places";
 import Distance from "./distance";
 import locations from '../data/extracted_data.json';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faChevronRight,faCar, faWalking, faBicycle } from "@fortawesome/free-solid-svg-icons";
 
 import { faChargingStation } from '@fortawesome/free-solid-svg-icons';
 import chargingStationIcon from "../public/charging.png";
@@ -21,7 +20,40 @@ import chargingStationIcon from "../public/charging.png";
 type LatLngLiteral = google.maps.LatLngLiteral;
 type DirectionsResult = google.maps.DirectionsResult;
 type MapOptions = google.maps.MapOptions;
+type CustomTravelMode = "DRIVING" | "WALKING" | "BICYCLING";
 
+const convertToTravelMode = (mode: CustomTravelMode): google.maps.TravelMode => {
+  switch (mode) {
+    case "DRIVING":
+      return google.maps.TravelMode.DRIVING;
+    case "WALKING":
+      return google.maps.TravelMode.WALKING;
+    case "BICYCLING":
+      return google.maps.TravelMode.BICYCLING;
+    default:
+      throw new Error("Invalid travel mode");
+  }
+};
+
+const ModeSelector: React.FC<{ onSelect: (mode: CustomTravelMode) => void }> = ({ onSelect }) => {
+  const handleClick = (mode: CustomTravelMode) => {
+    onSelect(mode);
+  };
+
+  return (
+    <div className="mode-selector">
+      <button onClick={() => handleClick("DRIVING")}>
+        <FontAwesomeIcon icon={faCar} size="2x" />
+      </button>
+      <button onClick={() => handleClick("WALKING")}>
+        <FontAwesomeIcon icon={faWalking} size="2x" />
+      </button>
+      <button onClick={() => handleClick("BICYCLING")}>
+        <FontAwesomeIcon icon={faBicycle} size="2x" />
+      </button>
+    </div>
+  );
+};
 export default function Map() {
   const [depart, setDepart] = useState<LatLngLiteral>();
   const [arriver, setArriver] = useState<LatLngLiteral>();
@@ -32,7 +64,7 @@ export default function Map() {
   const [selectedMarker, setSelectedMarker] = useState<Location | null>(null);
   const [showCharging, setShowCharging] = useState(false);
   const [currentIcon, setCurrentIcon] = useState('');
-  const [zoomLevel, setZoomLevel] = useState(10); // Default zoom level
+  const [zoomLevel, setZoomLevel] = useState(10); const [selectedTravelMode, setSelectedTravelMode] = useState<CustomTravelMode>("DRIVING");
 
 
   const mapRef = useRef<google.maps.Map>();
@@ -44,7 +76,7 @@ export default function Map() {
   const [isControlsFolded, setIsControlsFolded] = useState(false);
 
   const toggleControls = () => {
-    setIsControlsFolded((prevIsControlsFolded) => !prevIsControlsFolded);
+    setIsControlsFolded((prevState) => !prevState);
   };
 
   const options = useMemo<MapOptions>(
@@ -56,7 +88,6 @@ export default function Map() {
     }),
     []
   );
-
 
   const onLoad = useCallback((map) =>{
     (mapRef.current = map);
@@ -74,18 +105,26 @@ export default function Map() {
   };
 
 
-  const houses = useMemo(() => generateHouses(center), [center]);
   const calculateDistances = () => {
-    const distances: number[] = [];
+    if (!depart || !arriver) {
+      return;
+    }
 
-    houses.forEach((house) => {
-      fetchDirections(house);
-      // Assuming setDirections sets the distance in state
-      // Modify accordingly based on your implementation
-      distances.push(/* Get distance from state or any other method */);
-    });
-
-    setCalculatedDistances(distances);
+    const service = new google.maps.DirectionsService();
+    service.route(
+      {
+        origin: depart,
+        destination: arriver,
+        travelMode: convertToTravelMode(selectedTravelMode),
+      },
+      (result, status) => {
+        if (status === "OK" && result) {
+          setDirections(result);
+        } else {
+          alert(`Il n'existe pas de chemin reliant les deux points`);
+        }
+      }
+    );
   };
 
   const fetchDirections = (house: LatLngLiteral) => {
@@ -111,7 +150,11 @@ export default function Map() {
       setCurrentIcon('charging_station');
       showChargingStations();
     }
+  };
 
+  const handleTravelModeChange = (mode: CustomTravelMode) => {
+    console.log("Selected Travel Mode:", mode);
+    setSelectedTravelMode(mode);
   };
 
 
@@ -178,6 +221,26 @@ export default function Map() {
     return clusterStyles[0];
   };
 
+  useEffect(() => {
+    calculateDistances();
+  }, [selectedTravelMode]);
+  const [isClustererLoaded, setIsClustererLoaded] = useState(false);
+
+  useEffect(() => {
+    // Dynamically load the MarkerClusterer library
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/@react-google-maps/markerclusterer@1.0.0/dist/index.min.js";
+    script.async = true;
+    script.onload = () => {
+      setIsClustererLoaded(true);
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
   return (
     <div className="container">
       <IconBar onIconClick={handleIconClick} />
@@ -201,9 +264,11 @@ export default function Map() {
           showLocateMeButton={false} // Disable the button for the second Places component
 
         />
+        <ModeSelector onSelect={handleTravelModeChange} />
         <button onClick={calculateDistances} className="Button">Calculate Distances</button>
         {directions && <Distance leg={directions.routes[0].legs[0]} />}
       </div>
+
       <button onClick={toggleControls} className="FoldButton">
         {isControlsFolded ? <FontAwesomeIcon icon={faChevronRight} /> : <FontAwesomeIcon icon={faChevronLeft} />}
       </button>
