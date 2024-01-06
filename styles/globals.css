@@ -162,21 +162,17 @@ a {
 
 /* fold button */
 .FoldButton {
-  background-color: #4CAF50;
-  border: none;
+  background-color: #14161a;
+  border: white;
   color: white;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-size: 30px; /* Adjust font size for a slimmer button */
   cursor: pointer;
-  border-radius: 5px;
+
   transition: background-color 0.3s ease; /* Add transition for smooth color change */
 
-  /* Add hover effect */
-  &:hover {
-    background-color: #45a049;
-  }
 }
 .mode-selector {
   display: flex;
