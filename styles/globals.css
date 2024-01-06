@@ -193,8 +193,8 @@ a {
   cursor: pointer;
   border-radius: 5px;
   transition: background-color 0.3s ease;
-  display: "flex";
-  justify-content: "center";
+  display: flex;
+  justify-content: center;
   min-width: 60px;
 }
 
