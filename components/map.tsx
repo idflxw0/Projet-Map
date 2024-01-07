@@ -20,7 +20,7 @@ import chargingStationIcon from "../public/charging.png";
 type LatLngLiteral = google.maps.LatLngLiteral;
 type DirectionsResult = google.maps.DirectionsResult;
 type MapOptions = google.maps.MapOptions;
-type CustomTravelMode = "DRIVING" | "WALKING" | "BICYCLING";
+export type CustomTravelMode = "DRIVING" | "WALKING" | "BICYCLING";
 
 const convertToTravelMode = (mode: CustomTravelMode): google.maps.TravelMode => {
   switch (mode) {
@@ -245,9 +245,9 @@ export default function Map() {
     <div className="container">
       <IconBar onIconClick={handleIconClick} />
       <div className={`controls ${isControlsFolded ? 'folded' : ''}`}>
-        <h1>destination</h1>
+        <h1>Destination</h1>
         {/* eslint-disable-next-line react/no-unescaped-entities */}
-        {!depart && <div className="Text">Entrer l'adress de depart</div>}
+        {!depart && <div className="Text">Entrer l'adresse de départ</div>}
         <Places
           setOffice={(position) => {
             setDepart(position);
@@ -255,7 +255,7 @@ export default function Map() {
           }}
          showLocateMeButton/>
         {/* eslint-disable-next-line react/no-unescaped-entities */}
-        {!arriver && <div className="Text">entrer l'adress de votre destination</div>}
+        {!arriver && <div className="Text">Entrer l'adresse de votre destination</div>}
         <Places
           setOffice={(position) => {
             setArriver(position);
@@ -265,8 +265,8 @@ export default function Map() {
 
         />
         <ModeSelector onSelect={handleTravelModeChange} />
-        <button onClick={calculateDistances} className="Button">Calculate Distances</button>
-        {directions && <Distance leg={directions.routes[0].legs[0]} />}
+        <button onClick={calculateDistances} className="Button">Calculer trajet</button>
+        {directions && <Distance leg={directions.routes[0].legs[0]} travelMode={selectedTravelMode} />}
       </div>
 
       <button onClick={toggleControls} className="FoldButton">
