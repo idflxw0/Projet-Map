@@ -20,12 +20,14 @@ export default function Distance({ leg, travelMode }: DistanceProps) {
       DRIVING: 2.3,      // Emission factor for driving (kg CO2 per km, adjust as needed)
       WALKING: 0.01,        // Assuming walking doesn't use fuel (negligible CO2 emissions)
       BICYCLING: 0.5,   // Assuming low emissions for bicycling (adjust as needed)
+      TRANSIT: 0.01,
     };
 
     const litresPerKM = {
       DRIVING: 0.12,     // Litres of fuel per km for driving (adjust as needed)
       WALKING: 0,        // No fuel consumption for walking
       BICYCLING: 0,      // No fuel consumption for bicycling
+      TRANSIT : 0.12,
     };
 
     if (travelMode === "WALKING") {
@@ -36,6 +38,11 @@ export default function Distance({ leg, travelMode }: DistanceProps) {
       // For bicycling, assuming low emissions
       const co2Emission = (distance / 10000) * emissionFactors[travelMode];
       return Math.floor(co2Emission);
+    } else if(travelMode === "TRANSIT"){
+      // For transit, assuming low emissions
+      const co2Emission = (distance / 10000) * emissionFactors[travelMode];
+      return Math.floor(co2Emission);
+
     } else {
       // For other modes (e.g., DRIVING), calculate based on fuel consumption
       const co2Emission = (distance / 1000) * litresPerKM[travelMode] * emissionFactors[travelMode];

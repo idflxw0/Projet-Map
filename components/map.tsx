@@ -12,7 +12,7 @@ import Places from "./places";
 import Distance from "./distance";
 import locations from '../data/extracted_data.json';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faChevronRight,faCar, faWalking, faBicycle } from "@fortawesome/free-solid-svg-icons";
+import { faTrain, faChevronLeft, faChevronRight,faCar, faWalking, faBicycle } from "@fortawesome/free-solid-svg-icons";
 
 import { faChargingStation } from '@fortawesome/free-solid-svg-icons';
 import chargingStationIcon from "../public/charging.png";
@@ -20,18 +20,19 @@ import chargingStationIcon from "../public/charging.png";
 type LatLngLiteral = google.maps.LatLngLiteral;
 type DirectionsResult = google.maps.DirectionsResult;
 type MapOptions = google.maps.MapOptions;
-export type CustomTravelMode = "DRIVING" | "WALKING" | "BICYCLING";
+export type CustomTravelMode = "DRIVING" | "WALKING" | "BICYCLING" | "TRANSIT";
 
 const convertToTravelMode = (mode: CustomTravelMode): google.maps.TravelMode => {
-  switch (mode) {
-    case "DRIVING":
-      return google.maps.TravelMode.DRIVING;
-    case "WALKING":
-      return google.maps.TravelMode.WALKING;
-    case "BICYCLING":
-      return google.maps.TravelMode.BICYCLING;
-    default:
-      throw new Error("Invalid travel mode");
+  if (mode === "DRIVING") {
+    return google.maps.TravelMode.DRIVING;
+  } else if (mode === "WALKING") {
+    return google.maps.TravelMode.WALKING;
+  } else if (mode === "BICYCLING") {
+    return google.maps.TravelMode.BICYCLING;
+  } else if (mode === "TRANSIT") {
+    return google.maps.TravelMode.TRANSIT;
+  } else {
+    throw new Error("Invalid travel mode");
   }
 };
 
@@ -50,6 +51,9 @@ const ModeSelector: React.FC<{ onSelect: (mode: CustomTravelMode) => void }> = (
       </button>
       <button onClick={() => handleClick("BICYCLING")}>
         <FontAwesomeIcon icon={faBicycle} size="2x" />
+      </button>
+      <button onClick={() => handleClick("TRANSIT")}>
+        <FontAwesomeIcon icon={faTrain} size="2x" />
       </button>
     </div>
   );
@@ -355,12 +359,13 @@ export default function Map() {
               }}
             />
           )}
-          {depart && (
             <>
-              <Marker
+              {depart && (
+
+                <Marker
                 position={depart}
-                icon={process.env.PUBLIC_URL + "/charging.png"}
-              />
+                icon={process.env.PUBLIC_URL + "/location.png"}
+              />)}
               {arriver && (
                 <Marker
                   position={arriver}
@@ -368,14 +373,12 @@ export default function Map() {
                 />
               )}
 
-
-
-
               {/*<Circle center={office} radius={15000} options={closeOptions} />
               <Circle center={office} radius={30000} options={middleOptions} />
               <Circle center={office} radius={45000} options={farOptions} /> */}
+
             </>
-          )}
+
         </GoogleMap>
       </div>
     </div>
