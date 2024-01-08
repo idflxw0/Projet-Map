@@ -251,15 +251,16 @@ export default function Map() {
       <div className={`controls ${isControlsFolded ? 'folded' : ''}`}>
         <h1>Destination</h1>
         {/* eslint-disable-next-line react/no-unescaped-entities */}
-        {!depart && <div className="Text">Entrer l'adresse de départ</div>}
+        {!depart && <div className="Text">Entrez l'adresse de départ</div>}
         <Places
           setOffice={(position) => {
             setDepart(position);
             mapRef.current?.panTo(position);
           }}
          showLocateMeButton/>
+
         {/* eslint-disable-next-line react/no-unescaped-entities */}
-        {!arriver && <div className="Text">Entrer l'adresse de votre destination</div>}
+        {!arriver && <div className="Text">Entrez l'adresse de votre destination</div>}
         <Places
           setOffice={(position) => {
             setArriver(position);

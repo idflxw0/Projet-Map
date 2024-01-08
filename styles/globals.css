@@ -225,14 +225,20 @@ a {
 }
 
 .locate-me-button {
-  background-color: #3498db ;
+  background-color: #3498db;
   border: none;
   color: white;
   padding: 10.7px;
   cursor: pointer;
   border-radius: 5px;
   transition: background-color 0.3s ease;
+  transform: translateX(30px); /* Utilisez cette ligne pour déplacer vers la droite */
 }
+
+.locate-me-button:hover {
+  background-color: #2980b9; /* Choisissez la couleur au survol pour le bouton Locate Me */
+}
+
 
 .mode-selector {
   display: flex;
@@ -274,11 +280,13 @@ a {
   cursor: pointer;
   border-radius: 5px;
   transition: background-color 0.3s ease;
+  margin-right: 40px;
 }
 
 .locate-me-button:hover {
   background-color: #2980b9; /* Choisissez la couleur au survol pour le bouton Locate Me */
 }
+
 
 .Button {
   background-color: #4CAF50;
@@ -295,5 +303,11 @@ a {
 
 .Button:hover {
   background-color: #45a049; /* Choisissez la couleur au survol pour le bouton Button */
+}
+
+.places-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Ajoutez cette ligne pour définir l'espace entre les éléments */
 }
 
