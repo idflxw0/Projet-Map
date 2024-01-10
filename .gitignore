@@ -32,6 +32,15 @@ yarn-error.log*
 
 # vercel
 .vercel
+<<<<<<< HEAD
+.idea/codeStyles/Project.xml
+.idea/codeStyles/codeStyleConfig.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/php.xml
+.idea/modules.xml
+.idea/workspace.xml
+.idea/Projet-Map.iml
+=======
 .idea/workspace.xml
 .idea/codeStyles/codeStyleConfig.xml
 .idea/codeStyles/Project.xml
@@ -40,3 +49,4 @@ yarn-error.log*
 yarn.lock
 yarn.lock
 yarn.lock
+>>>>>>> 95fa475f471ad19d5ba2c204c7726e9d1a699e6f
