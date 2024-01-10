@@ -202,13 +202,14 @@ const Enregistrement = () => {
             <div className="content">
               <h3>Pas encore adhérent ?</h3>
               <p>
-                N'attendez plus, rejoignez-nous au plus vite en appuyant sur le bouton !
+                N&apos;attendez plus, rejoignez-nous au plus vite en appuyant sur le bouton !
               </p>
+
               <button className="btn transparent" id="sign-up-btn" onClick={handleSignUpClick}>
                 Inscrivez-vous
               </button>
             </div>
-            <img src="img/log.svg" className="image" alt="" />
+            {/*<img src="img/log.svg" className="image" alt="" />*/}
           </div>
           <div className="panel right-panel">
             <div className="content">
@@ -220,7 +221,7 @@ const Enregistrement = () => {
                 Connexion
               </button>
             </div>
-            <img src="img/register.svg" className="image" alt="" />
+            {/*<img src="img/register.svg" className="image" alt="" />*/}
           </div>
         </div>
       </div>
